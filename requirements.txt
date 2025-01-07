@@ -1,0 +1,26 @@
+# --- FAISS and LangChain packages ---
+faiss-cpu==1.9.0.post1
+langchain==0.3.10
+langchain-community==0.3.10
+langchain-core==0.3.23
+langchain-huggingface==0.1.2
+langchain-text-splitters==0.3.2
+
+# --- Pydantic and typed dependencies (critical for newer LangChain) ---
+pydantic==2.10.3
+pydantic_core==2.27.1
+pydantic-settings==2.6.1
+typing-inspect==0.9.0
+typing_extensions==4.12.2
+
+# --- Numeric/ML stack ---
+numpy==1.26.4
+pandas==2.2.2  # (unversioned, as not pinned in your file; pin if needed)
+pyarrow==18.0.0
+torch==2.5.1
+transformers==4.47.0
+
+# --- HF Datasets + minor deps ---
+datasets==3.1.0
+regex==2024.11.6  # Transformers often needs a newer regex
+tqdm==4.67.0
