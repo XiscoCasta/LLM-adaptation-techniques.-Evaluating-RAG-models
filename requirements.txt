@@ -15,7 +15,7 @@ typing_extensions==4.12.2
 
 # --- Numeric/ML stack ---
 numpy==1.26.4
-pandas==2.2.2  # (unversioned, as not pinned in your file; pin if needed)
+pandas==2.2.2
 pyarrow==18.0.0
 torch==2.5.1
 transformers==4.47.0
