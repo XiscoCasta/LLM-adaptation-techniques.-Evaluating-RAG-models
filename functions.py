@@ -6,7 +6,7 @@ import re
 from typing import Optional, List
 from langchain.docstore.document import Document as LangchainDocument
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 
 class CustomHuggingFaceEmbeddings(Embeddings):
     def __init__(self, model_name: str, normalize = False ,device: str = "cpu"):
@@ -314,11 +314,11 @@ class RAGPipeline_with_rerank:
             question: The query/question for the retriever.
             k: Number of documents to retrieve.
         Returns:
-            A concatenated string of retrieved documents.
+            Retrieved documents.
         """
         results = self.retriever.similarity_search(question, k=k)
         return results
-    def rerank_context(self, retrieved_context: List[LangchainDocument], k_reranked: int, question: str) -> str:
+    def rerank_context(self, retrieved_context: List[LangchainDocument], k_reranked: int, question: str, return_scores = False) -> str:
         """
         Rerank retrieved documents and return the top k_reranked.
         Args:
@@ -355,10 +355,9 @@ class RAGPipeline_with_rerank:
         # Retrieve the top k_reranked documents
         top_k_docs = [doc.page_content for doc, _ in scores[:k_reranked]]
 
-        # Concatenate the top documents into a single string
-        concatenated_context = "\n".join(top_k_docs)
-
-        return concatenated_context
+        if return_scores:
+            return top_k_docs, [score for _, score in scores]
+        return top_k_docs
 
     def generate_answer(self, question: str, k_retriever: int,k_reranked: int, return_context = False) -> str:
         """
@@ -372,7 +371,8 @@ class RAGPipeline_with_rerank:
             The generated answer (and optionally the context).
         """
         retrieved_context = self.retrieve_context(question, k_retriever)
-        reranked_context = self.rerank_context(retrieved_context, k_reranked, question)
+        top_rerank_docs = self.rerank_context(retrieved_context, k_reranked, question)
+        concatenated_context = "\n".join(top_rerank_docs)
         input_text = f"question: {question} context: {reranked_context}"
         inputs = self.tokenizer(input_text, return_tensors="pt", padding=True,truncation = True).to(self.device)
         
@@ -385,3 +385,5 @@ class RAGPipeline_with_rerank:
         if return_context: 
             return self.tokenizer.decode(outputs[0], skip_special_tokens=True), reranked_context
         return self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+
