@@ -180,7 +180,6 @@ def tokenize_compare(generated: str, ground_truths: list[str], tokenizer ,thresh
             overlap = len(generated_tokens & gt_tokens) / len(gt_tokens)
         else:
             overlap =0
-        # If overlap exceeds threshold, count as a match
         if overlap >= threshold:
             return True
     return False
@@ -345,11 +344,7 @@ class RAGPipeline_with_rerank:
             with torch.no_grad():
                 logits = self.model_cross(**tokenized_input).logits
                 score = logits.squeeze().item()
-
-            # Append the document and its score
             scores.append((doc, score))
-
-        # Sort documents by scores in descending order
         scores = sorted(scores, key=lambda x: x[1], reverse=True)
 
         # Retrieve the top k_reranked documents
